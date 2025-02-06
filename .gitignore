@@ -1,3 +1,7 @@
 .idea
+vcpkg_installed
 cmake-build-*
+build
+
 tmp*
+libs
