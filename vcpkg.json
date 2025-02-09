@@ -1,8 +1,6 @@
 {
-  "name": "linc-tool",
-  "version": "1.0.0",
   "dependencies": [
-    "fmt",
+    "spdlog",
     "cpp-httplib"
   ]
 }

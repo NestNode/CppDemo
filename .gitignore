@@ -1,7 +1,14 @@
+# your self config
+.vs
 .idea
+CMakeUserPresets.json
+
+# tmp
 vcpkg_installed
+libs
+tmp*
+
+# build
 cmake-build-*
 build
-
-tmp*
-libs
+out

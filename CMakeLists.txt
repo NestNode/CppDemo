@@ -12,7 +12,7 @@ project(${PROJECT_NAME}) # VERSION ${PROJECT_VERSION}
 # Project
 # Project - Cpp/Bin
 file(GLOB_RECURSE SRCS src/*.cpp src/*.c)
-add_executable(${PROJECT_NAME} src/main.cpp ${SRCS})
+add_executable(${PROJECT_NAME} ${SRCS})
 # Project - H
 function(include_sub_directories_recursively root_dir) # Contains all header files under the specified file
     if (IS_DIRECTORY ${root_dir})
@@ -28,6 +28,24 @@ function(include_sub_directories_recursively root_dir) # Contains all header fil
 endfunction()
 include_sub_directories_recursively(${PROJECT_SOURCE_DIR}/src)
 
+
+# Depend (b1. vcpkg)
+#find_package(spdlog CONFIG REQUIRED)
+#target_link_libraries(${PROJECT_NAME} PRIVATE spdlog::spdlog)
+#find_package(httplib CONFIG REQUIRED)
+#target_link_libraries(${PROJECT_NAME} PRIVATE httplib::httplib)
+# Depend (b2. build)
+list(APPEND CMAKE_PREFIX_PATH "${PROJECT_SOURCE_DIR}/libs/spdlog/build/")
+find_package(spdlog CONFIG REQUIRED)
+target_link_libraries(${PROJECT_NAME} PRIVATE spdlog::spdlog)
+include_directories(${CMAKE_SOURCE_DIR}/libs)
+# Depend (Platform)
+if (WIN32)
+    # (Windows, httplib需要这个)
+    target_link_libraries(${PROJECT_NAME}
+        PRIVATE kernel32 user32 gdi32 winspool shell32 ole32 oleaut32 uuid comdlg32 advapi32 ws2_32
+    )
+endif()
 
 # Message
 message("Compile Info")
@@ -59,8 +77,3 @@ elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
 else()
     message(WARNING, "        Other ${CMAKE_CXX_COMPILER_VERSION}")
 endif()
-
-
-# Depend (vcpkg)
-find_package(fmt CONFIG REQUIRED)
-target_link_libraries(${PROJECT_NAME} PRIVATE fmt::fmt)
