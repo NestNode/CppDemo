@@ -1,13 +1,11 @@
-#include <iostream>
-
 #include "./http/http.h"
 
 int main() {
-    std::cout << "Hello, World!" << std::endl;
+    // #include <windows.h>
+    // extern void ClipText_Init();
+    // ClipText_Init();
 
     startServer();
-
-    std::cout << "Hello, World2!" << std::endl;
 
     return 0;
 }
