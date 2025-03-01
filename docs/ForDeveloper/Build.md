@@ -90,7 +90,7 @@ cmake ..; cmake --build .
 
 ```cmake
 # 这个是原来用vcpkg的写法
-find_package(spdlog CONFIG REQUIRED)
+# find_package(spdlog CONFIG REQUIRED)
 
 # 修改成直接指定搜包路径
 find_package(spdlog CONFIG REQUIRED PATHS "${PROJECT_SOURCE_DIR}/libs/spdlog/build/")
@@ -100,6 +100,21 @@ list(APPEND CMAKE_PREFIX_PATH "${PROJECT_SOURCE_DIR}/libs/spdlog/build/")
 
 # 或者添加该语句 (整体设置搜包路径)
 set(CMAKE_PREFIX_PATH "${PROJECT_SOURCE_DIR}/libs/spdlog/build/")
+```
+
+### nlohmann/json
+
+```bash
+cd libs
+git clone --depth 1 https://github.com/nlohmann/json.git
+cd json && mkdir build && cd build
+cmake .. && cmake --build .
+```
+
+可以发现include文件夹里的是 `.hpp`，所以可以用头文件方式使用
+
+```cmake
+include_directories(${CMAKE_SOURCE_DIR}/libs/json/include/)
 ```
 
 ## 我的环境

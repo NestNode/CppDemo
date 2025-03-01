@@ -1,6 +1,7 @@
 {
   "dependencies": [
     "spdlog",
-    "cpp-httplib"
+    "cpp-httplib",
+    "nlohmann-json"
   ]
 }

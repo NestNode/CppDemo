@@ -2,6 +2,7 @@
 
 #include <spdlog/spdlog.h>
 #include <httplib.h>
+#include <nlohmann/json.hpp>
 
 void startServer() {
     spdlog::info(">>> HttpServer, 0.0.0.0:9863");
@@ -12,7 +13,16 @@ void startServer() {
         res.set_header("Access-Control-Allow-Origin", "*");
     });
     server.Get("/test", [](const httplib::Request &, httplib::Response &res) {
-        res.set_content("Hello Test!", "text/plain");
+        nlohmann::json resp_json = R"({
+            "code": 0,
+            "msg": "",
+            "data": {
+                "message": "Hello Test!"
+            }
+        })"_json;
+        std::string resp_str = resp_json.dump();
+
+        res.set_content(resp_str, "application/json");
         res.set_header("Access-Control-Allow-Origin", "*");
     });
 
