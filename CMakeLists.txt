@@ -41,9 +41,13 @@ include_sub_directories_recursively(${PROJECT_SOURCE_DIR}/src)
 #find_package(spdlog CONFIG REQUIRED)
 #target_link_libraries(${PROJECT_NAME} PRIVATE spdlog::spdlog)
 # Depend (b2. onlyHeader)
-include_directories(${CMAKE_SOURCE_DIR}/libs/spdlog/include/)
-include_directories(${CMAKE_SOURCE_DIR}/libs/)
-include_directories(${CMAKE_SOURCE_DIR}/libs/json/include/)
+add_subdirectory(libs/spdlog)
+add_subdirectory(libs/json)
+target_include_directories(${PROJECT_NAME} PRIVATE
+    ${CMAKE_SOURCE_DIR}/libs/
+    ${CMAKE_SOURCE_DIR}/libs/spdlog/include/
+    ${CMAKE_SOURCE_DIR}/libs/json/single_include/
+)
 # Depend (Platform)
 if (WIN32)
     # (Windows, httplib需要这个)

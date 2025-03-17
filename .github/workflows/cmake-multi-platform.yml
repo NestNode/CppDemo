@@ -51,19 +51,17 @@ jobs:
         mkdir -p libs && cd libs
         
         curl -L -o httplib.h https://raw.githubusercontent.com/LincZero/cpp-httplib/master/benchmark/cpp-httplib-base/httplib.h
-        echo "finish depend - httplib"
+        echo "------------------- finish depend - httplib"
         
         git clone --depth 1 https://github.com/gabime/spdlog.git
-        cd spdlog && mkdir build && cd build
-        cmake .. && cmake --build .
-        cd ../
-        echo "finish depend - spdlog"
+        # cd spdlog && mkdir build && cd build && cmake .. && cmake --build . && cd ../
+        echo "------------------- finish depend - spdlog"
         
         git clone --depth 1 https://github.com/nlohmann/json.git
-        cd json && mkdir build && cd build
-        cmake .. && cmake --build .
-        cd ../
-        echo "finish depend - json"
+        # cd json && mkdir build && cd build && cmake .. && cmake --build . && cd ../
+        echo "------------------- finish depend - json"
+        
+        tree -L 2
 
     - name: Set reusable strings
       # 将重复的输入字符串（例如构建输出目录）转换为步骤输出。这些步骤输出可以在整个工作流文件中使用。
