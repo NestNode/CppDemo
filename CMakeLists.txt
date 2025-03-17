@@ -48,13 +48,6 @@ target_include_directories(${PROJECT_NAME} PRIVATE
     ${CMAKE_SOURCE_DIR}/libs/spdlog/include/
     ${CMAKE_SOURCE_DIR}/libs/json/single_include/
 )
-# Depend (Platform)
-if (WIN32)
-    # (Windows, httplib需要这个)
-    target_link_libraries(${PROJECT_NAME}
-        PRIVATE kernel32 user32 gdi32 winspool shell32 ole32 oleaut32 uuid comdlg32 advapi32 ws2_32
-    )
-endif()
 
 
 # Message
@@ -86,4 +79,19 @@ elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
     message("        Clang ${CMAKE_CXX_COMPILER_VERSION}")
 else()
     message(WARNING, "        Other ${CMAKE_CXX_COMPILER_VERSION}")
+endif()
+
+
+# 兼容问题
+# MSVC强制使用utf-8，否则spdlog不支持
+if(MSVC)
+    add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
+    add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
+    add_definitions(-DSPDLOG_USE_STD_FORMAT)
+endif()
+# Windows httplib需要一些链接库
+if (WIN32)
+    target_link_libraries(${PROJECT_NAME}
+            PRIVATE kernel32 user32 gdi32 winspool shell32 ole32 oleaut32 uuid comdlg32 advapi32 ws2_32
+    )
 endif()

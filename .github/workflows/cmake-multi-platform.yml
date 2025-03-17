@@ -29,6 +29,11 @@ jobs:
           - os: windows-latest
             c_compiler: cl
             cpp_compiler: cl
+            toolchain: msbuild
+          - os: windows-latest
+            c_compiler: gcc
+            cpp_compiler: g++
+            toolchain: mingw
           - os: ubuntu-latest
             c_compiler: gcc
             cpp_compiler: g++
@@ -89,3 +94,9 @@ jobs:
       # 执行CMake配置定义的测试。注意 `——build-config` 是必需的，因为默认的Windows生成器是一个多配置生成器（Visual Studio生成器）。
       # 参见 https://cmake.org/cmake/help/latest/manual/ctest.1.html 了解更多细节
       run: ctest --build-config ${{ matrix.build_type }}
+
+    - name: Upload Build Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: build-${{ matrix.os }}-${{ matrix.c_compiler }}-${{ matrix.build_type }}
+        path: ${{ steps.strings.outputs.build-output-dir }}
