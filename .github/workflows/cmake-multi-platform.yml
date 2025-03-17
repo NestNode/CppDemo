@@ -48,9 +48,9 @@ jobs:
 
     - name: Depend
       run: |
-        mkdir libs && cd libs
+        mkdir -p libs && cd libs
         
-        wget -O ./httplib.h https://raw.githubusercontent.com/LincZero/cpp-httplib/master/benchmark/cpp-httplib-base/httplib.h
+        curl -L -o httplib.h https://raw.githubusercontent.com/LincZero/cpp-httplib/master/benchmark/cpp-httplib-base/httplib.h
         echo "finish depend - httplib"
         
         git clone --depth 1 https://github.com/gabime/spdlog.git
@@ -63,7 +63,7 @@ jobs:
         cd json && mkdir build && cd build
         cmake .. && cmake --build .
         cd ../
-        echo "finish depend - spdlog"
+        echo "finish depend - json"
 
     - name: Set reusable strings
       # 将重复的输入字符串（例如构建输出目录）转换为步骤输出。这些步骤输出可以在整个工作流文件中使用。
