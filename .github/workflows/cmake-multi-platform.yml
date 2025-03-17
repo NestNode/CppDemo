@@ -98,11 +98,20 @@ jobs:
       # - Visual Studio生成器: 多配置生成器，`——config` 是必需的。构建类型在构建时动态选择
       # - MinGW 生成器: 单配置，加 `--config` 会报错。构建类型在配置阶段通过 `-DCMAKE_BUILD_TYPE` 确认
       # - Linux 的 Unix Makefiles: 加不加 `--config` 都行
+      #
+      # 坑: 通用 if 语句需要 bash 环境，bahs环境需要处理 winodws 的翻斜杠路径
       run: |
-        if [[ "${{ matrix.generator }}" == *"Visual Studio"* ]]; then
-          cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }}
+        # 动态处理路径格式（Windows需转换）
+        if [[ "${{ runner.os }}" == "Windows" ]]; then
+          build_dir=$(cygpath -u "${{ steps.strings.outputs.build-output-dir }}")  # 转换路径
         else
-          cmake --build ${{ steps.strings.outputs.build-output-dir }}
+          build_dir="${{ steps.strings.outputs.build-output-dir }}"
+        fi
+        
+        if [[ "${{ matrix.generator }}" == *"Visual Studio"* ]]; then
+          cmake --build "$build_dir" --config ${{ matrix.build_type }}
+        else
+          cmake --build "$build_dir"
         fi
       shell: bash
 
