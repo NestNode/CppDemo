@@ -136,23 +136,14 @@ jobs:
         name: build-${{ matrix.os }}-${{ matrix.c_compiler }}-${{ matrix.build_type }}
         path: ${{ steps.strings.outputs.build-output-dir }}
 
-    - name: Create GitHub Release (可选, 创建 beta release)
-      id: create_release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Create Release and Upload Assets (可选, 缓存产物到beta release)
+      uses: softprops/action-gh-release@v1
       with:
-        tag_name: 'beta-${{ github.run_number }}'
-        release_name: 'Beta ${{ github.run_number }}'
+        tag_name: beta-${{ github.run_number }}
+        name: Beta ${{ github.run_number }}
         draft: false
         prerelease: true
-
-    - name: Upload Release Asset (可选, 缓存产物到 beta release)
-      uses: actions/upload-release-asset@v1
+        files: |
+          ${{ steps.strings.outputs.build-output-dir }}/*
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        asset_name: build-${{ matrix.os }}-${{ matrix.c_compiler }}-${{ matrix.build_type }}
-        asset_path: ${{ steps.strings.outputs.build-output-dir }}
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_content_type: application/zip
