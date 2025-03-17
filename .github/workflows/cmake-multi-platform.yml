@@ -1,3 +1,4 @@
+# 这个模板基于 github 自己的多平台 cmake，再稍微改了一点
 # 这个starter工作流是为运行在多个平台上的CMake项目准备的。如果你只想要一个单一的平台，有一个不同的初学者工作流程。See: https://github.com/actions/starter-workflows/blob/main/ci/cmake-single-platform.yml
 name: CMake on multiple platforms
 
@@ -21,6 +22,8 @@ jobs:
       # 3. <Linux, Release, latest Clang compiler toolchain on the default runner image, default generator>
       #
       # To add more build types (Release, Debug, RelWithDebInfo, etc.) customize the build_type list.
+      #
+      # 这里的toolchain、generator等都是可选
       matrix:
         os: [ubuntu-latest, windows-latest]
         build_type: [Release]
@@ -30,16 +33,20 @@ jobs:
             c_compiler: cl
             cpp_compiler: cl
             toolchain: msbuild
+            generator: "Visual Studio 17 2022"
           - os: windows-latest
             c_compiler: gcc
             cpp_compiler: g++
             toolchain: mingw
+            generator: "MinGW Makefiles"
           - os: ubuntu-latest
             c_compiler: gcc
             cpp_compiler: g++
+            generator: "Unix Makefiles"
           - os: ubuntu-latest
             c_compiler: clang
             cpp_compiler: clang++
+            generator: "Unix Makefiles"
         exclude:
           - os: windows-latest
             c_compiler: gcc
@@ -86,8 +93,17 @@ jobs:
         -S ${{ github.workspace }}
 
     - name: Build
-      # 使用给定的配置构建程序。注意 `——config` 是必需的，因为默认的Windows生成器是一个多配置生成器（Visual Studio生成器）。
-      run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }}
+      # 使用给定的配置构建程序。
+      # 注意:
+      # - Visual Studio生成器: 多配置生成器，`——config` 是必需的。构建类型在构建时动态选择
+      # - MinGW 生成器: 单配置，加 `--config` 会报错。构建类型在配置阶段通过 `-DCMAKE_BUILD_TYPE` 确认
+      # - Linux 的 Unix Makefiles: 加不加 `--config` 都行
+      run: |
+        if [[ "${{ matrix.generator }}" == *"Visual Studio"* ]]; then
+          cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }}
+        else
+          cmake --build ${{ steps.strings.outputs.build-output-dir }}
+        fi
 
     - name: Test
       working-directory: ${{ steps.strings.outputs.build-output-dir }}
