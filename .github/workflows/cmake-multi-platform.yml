@@ -56,9 +56,17 @@ jobs:
             c_compiler: cl
 
     steps:
-    - uses: actions/checkout@v4
+    - name: 1. Set reusable strings
+      # 将重复的输入字符串（例如构建输出目录）转换为步骤输出。这些步骤输出可以在整个工作流文件中使用。
+      id: strings
+      shell: bash
+      run: |
+        echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
 
-    - name: Depend
+    - name: 2. checkout
+      uses: actions/checkout@v4
+
+    - name: 3. Depend
       run: |
         mkdir -p libs && cd libs
         
@@ -75,14 +83,7 @@ jobs:
         
         tree -L 1
 
-    - name: Set reusable strings
-      # 将重复的输入字符串（例如构建输出目录）转换为步骤输出。这些步骤输出可以在整个工作流文件中使用。
-      id: strings
-      shell: bash
-      run: |
-        echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
-
-    - name: Configure CMake
+    - name: 4. Configure CMake
       # 在 `build` `子目录下配置CMake。`CMAKE_BUILD_TYPE` 仅在使用单一配置生成器（如make）时才需要。
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
       run: >
@@ -92,7 +93,7 @@ jobs:
         -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
         -S ${{ github.workspace }}
 
-    - name: Build
+    - name: 4. Build
       # 使用给定的配置构建程序
       #
       # 注意:
@@ -117,7 +118,7 @@ jobs:
         fi
       shell: bash
 
-    - name: Test
+    - name: Test (可选, c测试)
       working-directory: ${{ steps.strings.outputs.build-output-dir }}
       # 执行CMake配置定义的测试。注意 `——build-config` 是必需的，因为默认的Windows生成器是一个多配置生成器（Visual Studio生成器）。
       # 参见 https://cmake.org/cmake/help/latest/manual/ctest.1.html 了解更多细节
@@ -129,8 +130,29 @@ jobs:
         fi
       shell: bash
 
-    - name: Upload Build Artifacts
+    - name: Upload Build Artifacts (可选, 缓存产物)
       uses: actions/upload-artifact@v4
       with:
         name: build-${{ matrix.os }}-${{ matrix.c_compiler }}-${{ matrix.build_type }}
         path: ${{ steps.strings.outputs.build-output-dir }}
+
+    - name: Create GitHub Release (可选, 创建 beta release)
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: 'beta-${{ github.run_number }}'
+        release_name: 'Beta ${{ github.run_number }}'
+        draft: false
+        prerelease: true
+
+    - name: Upload Release Asset (可选, 缓存产物到 beta release)
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        asset_name: build-${{ matrix.os }}-${{ matrix.c_compiler }}-${{ matrix.build_type }}
+        asset_path: ${{ steps.strings.outputs.build-output-dir }}
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_content_type: application/zip
