@@ -6,7 +6,7 @@
 
 ### cpp-httplib
 
-https://github.com/LincZero/cpp-httplib fork https://github.com/yhirose/cpp-httplib
+~~https://github.com/LincZero/cpp-httplib fork https://github.com/yhirose/cpp-httplib~~
 
 (1) 纯头文件版本
 
