@@ -3,6 +3,7 @@
 ## 通用部分
 
 更多的通用的C++项目编译流程，见我个人官网文档库中的笔记: [《How to build cpp》](https://linczero.github.io/MdNote_Public/01.%20DesignAndDevelop/Develop/03.%20Tools/02.%20%E5%BC%80%E5%8F%91%E5%B1%82/Build%20Tools/How%20to%20build%20cpp/)
+也可以参考工作流文件中的流程
 
 这里仅是一些需要补充的部分 (已经一些常用操作的备注)，通用部分不再赘述
 
